@@ -117,7 +117,7 @@ const MedicalOfficerDashboard = () => {
                 <Heart className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="text-lg font-display font-bold text-foreground">
-                Kishore Raksha
+                Student digital health profile
               </span>
             </Link>
             

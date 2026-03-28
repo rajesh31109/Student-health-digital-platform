@@ -73,7 +73,7 @@ const AdminDashboard = () => {
                 <Heart className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="text-lg font-display font-bold text-foreground">
-                Kishore Raksha
+                Student Digital Health Profile
               </span>
             </Link>
             

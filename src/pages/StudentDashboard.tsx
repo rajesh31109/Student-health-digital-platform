@@ -30,7 +30,6 @@ const StudentDashboard = () => {
     navigate("/login/student");
   };
 
-  // Sample student data
   const studentData = {
     name: "Ravi Kumar",
     healthId: "KR12345678",
@@ -94,7 +93,7 @@ const StudentDashboard = () => {
                 <Heart className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="text-lg font-display font-bold text-foreground">
-                Kishore Raksha
+                Student Digital health Profile
               </span>
             </Link>
             

@@ -7,16 +7,47 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { getApiBaseUrl } from "@/config/api";
 
 const StudentLogin = () => {
   const navigate = useNavigate();
   const [healthId, setHealthId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (healthId.length > 0) {
-      toast.success("Login successful!");
-      navigate("/dashboard/student");
+    if (healthId.length === 0) {
+      toast.error("Please enter your Health ID");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${getApiBaseUrl()}/auth/student-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ healthId: healthId.toUpperCase() })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Store authentication data
+        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("healthId", data.data.healthId);
+        localStorage.setItem("userName", data.data.name);
+        localStorage.setItem("role", "student");
+
+        toast.success(`Welcome, ${data.data.name}!`);
+        navigate("/student-dashboard");
+      } else {
+        toast.error(data.message || "Invalid Health ID");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -54,15 +85,16 @@ const StudentLogin = () => {
                         onChange={(e) => setHealthId(e.target.value.toUpperCase())}
                         className="pl-10"
                         required
+                        disabled={isLoading}
                       />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Your Health ID was provided during registration
+                      Your Health ID was provided during registration (e.g., TG-01-1968-0001)
                     </p>
                   </div>
 
-                  <Button type="submit" className="w-full" size="lg">
-                    View My Health Records
+                  <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                    {isLoading ? "Logging in..." : "View My Health Records"}
                   </Button>
                 </form>
 
@@ -73,6 +105,12 @@ const StudentLogin = () => {
                     <li>• Data cannot be modified or deleted</li>
                     <li>• Contact your PHC for any corrections</li>
                   </ul>
+                </div>
+
+                <div className="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                  <p className="text-xs text-blue-900">
+                    <strong>Demo:</strong> Use Health ID: <code className="bg-white px-2 py-1 rounded">TG-01-1968-0001</code>
+                  </p>
                 </div>
               </CardContent>
             </Card>

@@ -8,35 +8,67 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { getApiBaseUrl } from "@/config/api";
 
 const MedicalOfficerLogin = () => {
   const navigate = useNavigate();
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
     if (phone.length === 10) {
       setOtpSent(true);
-      toast.success("OTP sent successfully!");
+      toast.info("OTP feature coming soon. Please use Email+Password tab.");
     }
   };
 
   const handleOtpLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (otp.length === 6) {
-      toast.success("Login successful!");
-      navigate("/dashboard/medical-officer");
-    }
+    toast.info("OTP login feature coming soon. Please use Email+Password tab.");
   };
 
-  const handlePasswordLogin = (e: React.FormEvent) => {
+  const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Login successful!");
-    navigate("/dashboard/medical-officer");
+    
+    if (!email || !password) {
+      toast.error("Please enter email and password");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${getApiBaseUrl()}/auth/mo-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Store authentication data
+        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("moId", data.data.moId);
+        localStorage.setItem("userName", data.data.name);
+        localStorage.setItem("userEmail", data.data.email);
+        localStorage.setItem("role", "medical_officer");
+
+        toast.success(`Welcome, ${data.data.name}!`);
+        navigate("/medical-officer-dashboard");
+      } else {
+        toast.error(data.message || "Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -121,13 +153,14 @@ const MedicalOfficerLogin = () => {
                   <TabsContent value="password">
                     <form onSubmit={handlePasswordLogin} className="space-y-4">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-foreground">Username</label>
+                        <label className="text-sm font-medium text-foreground">Email</label>
                         <Input
-                          type="text"
-                          placeholder="Enter username"
-                          value={username}
-                          onChange={(e) => setUsername(e.target.value)}
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
                           required
+                          disabled={isLoading}
                         />
                       </div>
                       <div className="space-y-2">
@@ -141,13 +174,20 @@ const MedicalOfficerLogin = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             className="pl-10"
                             required
+                            disabled={isLoading}
                           />
                         </div>
                       </div>
-                      <Button type="submit" className="w-full" size="lg">
-                        Login
+                      <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                        {isLoading ? "Logging in..." : "Login"}
                       </Button>
                     </form>
+
+                    <div className="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                      <p className="text-xs text-blue-900">
+                        <strong>Demo:</strong> Email: <code className="bg-white px-2 py-1 rounded">doctor@example.com</code> | Password: <code className="bg-white px-2 py-1 rounded">doctor123</code>
+                      </p>
+                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>

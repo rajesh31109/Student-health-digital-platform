@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2, User, Lock, ArrowLeft } from "lucide-react";
+import { Building2, Mail, Lock, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,16 +7,51 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { getApiBaseUrl } from "@/config/api";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Login successful!");
-    navigate("/dashboard/admin");
+    
+    if (!email || !password) {
+      toast.error("Please enter email and password");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${getApiBaseUrl()}/auth/admin-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Store authentication data
+        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("adminId", data.data.adminId);
+        localStorage.setItem("userName", data.data.name);
+        localStorage.setItem("userEmail", data.data.email);
+        localStorage.setItem("role", "admin");
+
+        toast.success(`Welcome, ${data.data.name}!`);
+        navigate("/admin-dashboard");
+      } else {
+        toast.error(data.message || "Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -43,16 +78,17 @@ const AdminLogin = () => {
               <CardContent>
                 <form onSubmit={handleLogin} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Username</label>
+                    <label className="text-sm font-medium text-foreground">Email</label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                       <Input
-                        type="text"
-                        placeholder="Enter admin username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        type="email"
+                        placeholder="Enter email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="pl-10"
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
@@ -68,12 +104,13 @@ const AdminLogin = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         className="pl-10"
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full" size="lg">
-                    Login to Dashboard
+                  <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                    {isLoading ? "Logging in..." : "Login to Dashboard"}
                   </Button>
                 </form>
 

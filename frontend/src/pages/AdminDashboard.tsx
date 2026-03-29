@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getApiBaseUrl } from "@/config/api";
 import { 
   Heart, 
   Search, 
@@ -31,36 +32,84 @@ const AdminDashboard = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedMandal, setSelectedMandal] = useState("");
   const [selectedSchool, setSelectedSchool] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState([
+    { label: "Total Students", value: "0", icon: Users, color: "text-health-blue", change: "+0%" },
+    { label: "Schools Covered", value: "0", icon: School, color: "text-health-teal", change: "+0" },
+    { label: "Checkups This Month", value: "0", icon: Activity, color: "text-health-green", change: "+0%" },
+    { label: "Reports Generated", value: "0", icon: FileText, color: "text-health-orange", change: "+0" },
+  ]);
+  const [healthAlerts, setHealthAlerts] = useState([
+    { type: "Anemia Cases", count: 0, severity: "high", mandal: "N/A" },
+    { type: "Vision Issues", count: 0, severity: "medium", mandal: "N/A" },
+    { type: "Underweight Students", count: 0, severity: "high", mandal: "N/A" },
+    { type: "Dental Problems", count: 0, severity: "low", mandal: "N/A" },
+  ]);
+  const [topSchools, setTopSchools] = useState([
+    { name: "School 1", students: 0, checkups: 0, completion: 0 },
+    { name: "School 2", students: 0, checkups: 0, completion: 0 },
+  ]);
+
+  useEffect(() => {
+    fetchAdminDashboard();
+  }, []);
+
+  const fetchAdminDashboard = async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        toast.error("Not authenticated. Please login again.");
+        navigate("/login/admin");
+        return;
+      }
+
+      // Fetch admin dashboard statistics
+      const response = await fetch(`${getApiBaseUrl()}/admin/dashboard/statistics`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          const dashboard_data = data.data;
+          setStats([
+            { label: "Total Students", value: dashboard_data.totalStudents || "0", icon: Users, color: "text-health-blue", change: "+0%" },
+            { label: "Schools Covered", value: dashboard_data.schoolsCovered || "0", icon: School, color: "text-health-teal", change: "+0" },
+            { label: "Checkups This Month", value: dashboard_data.checkupsThisMonth || "0", icon: Activity, color: "text-health-green", change: "+0%" },
+            { label: "Reports Generated", value: dashboard_data.reportsGenerated || "0", icon: FileText, color: "text-health-orange", change: "+0" },
+          ]);
+
+          if (dashboard_data.healthAlerts) {
+            setHealthAlerts(dashboard_data.healthAlerts);
+          }
+
+          if (dashboard_data.topSchools) {
+            setTopSchools(dashboard_data.topSchools);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      toast.error("Could not load dashboard data. Using demo data.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
     toast.success("Logged out successfully");
     navigate("/login/admin");
   };
-
-  const stats = [
-    { label: "Total Students", value: "45,678", icon: Users, color: "text-health-blue", change: "+2.5%" },
-    { label: "Schools Covered", value: "234", icon: School, color: "text-health-teal", change: "+12" },
-    { label: "Checkups This Month", value: "8,456", icon: Activity, color: "text-health-green", change: "+18%" },
-    { label: "Reports Generated", value: "567", icon: FileText, color: "text-health-orange", change: "+45" },
-  ];
-
-  const healthAlerts = [
-    { type: "Anemia Cases", count: 234, severity: "high", mandal: "Anantapur" },
-    { type: "Vision Issues", count: 156, severity: "medium", mandal: "Kadiri" },
-    { type: "Underweight Students", count: 89, severity: "high", mandal: "Uravakonda" },
-    { type: "Dental Problems", count: 67, severity: "low", mandal: "Penukonda" },
-  ];
-
-  const topSchools = [
-    { name: "ZPHS Anantapur", students: 456, checkups: 420, completion: 92 },
-    { name: "ZPHS Kadiri", students: 389, checkups: 350, completion: 90 },
-    { name: "MPPS Uravakonda", students: 234, checkups: 200, completion: 85 },
-    { name: "ZPHS Penukonda", students: 198, checkups: 165, completion: 83 },
-    { name: "MPPS Guntakal", students: 167, checkups: 134, completion: 80 },
-  ];
-
-  const districts = ["Anantapur", "Kurnool", "Kadapa", "Chittoor", "Nellore"];
-  const mandals = ["Anantapur", "Kadiri", "Uravakonda", "Penukonda", "Guntakal", "Dharmavaram"];
 
   return (
     <div className="min-h-screen bg-background">

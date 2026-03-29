@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getApiBaseUrl } from "@/config/api";
 import { 
   Heart, 
   Search, 
@@ -28,6 +29,13 @@ const MedicalOfficerDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("register");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [stats, setStats] = useState([
+    { label: "Students Registered", value: "0", icon: Users, color: "text-health-teal" },
+    { label: "Checkups Today", value: "0", icon: ClipboardList, color: "text-health-blue" },
+    { label: "Pending Checkups", value: "0", icon: Calendar, color: "text-health-orange" },
+    { label: "Reports Generated", value: "0", icon: FileText, color: "text-health-green" },
+  ]);
   
   // Registration form state
   const [studentForm, setStudentForm] = useState({
@@ -71,40 +79,138 @@ const MedicalOfficerDashboard = () => {
     remarks: "",
   });
 
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        toast.error("Not authenticated. Please login again.");
+        navigate("/login/medical-officer");
+        return;
+      }
+
+      // Fetch MO statistics
+      const response = await fetch(`${getApiBaseUrl()}/mo/statistics`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          const stats_data = data.data;
+          setStats([
+            { label: "Students Registered", value: stats_data.totalStudents || "0", icon: Users, color: "text-health-teal" },
+            { label: "Checkups Today", value: stats_data.checkupsToday || "0", icon: ClipboardList, color: "text-health-blue" },
+            { label: "Pending Checkups", value: stats_data.pendingCheckups || "0", icon: Calendar, color: "text-health-orange" },
+            { label: "Reports Generated", value: stats_data.reportsGenerated || "0", icon: FileText, color: "text-health-green" },
+          ]);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      toast.error("Could not load dashboard data. Using demo data.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
     toast.success("Logged out successfully");
     navigate("/login/medical-officer");
   };
 
-  const handleStudentRegistration = (e: React.FormEvent) => {
+  const handleStudentRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
-    const healthId = `KR${Date.now().toString().slice(-8)}`;
-    toast.success(`Student registered successfully! Health ID: ${healthId}`);
-    setStudentForm({
-      name: "", dob: "", gender: "", school: "", class: "", section: "",
-      fatherName: "", motherName: "", address: "", district: "", mandal: "",
-      village: "", phc: "",
-    });
+    
+    try {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        toast.error("Not authenticated");
+        return;
+      }
+
+      const response = await fetch(`${getApiBaseUrl()}/mo/students/register`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(studentForm)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success(`Student registered! Health ID: ${data.data.healthId}`);
+        setStudentForm({
+          name: "", dob: "", gender: "", school: "", class: "", section: "",
+          fatherName: "", motherName: "", address: "", district: "", mandal: "",
+          village: "", phc: "",
+        });
+        fetchDashboardData(); // Refresh stats
+      } else {
+        toast.error(data.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error("Failed to register student");
+    }
   };
 
-  const handleHealthDataSubmit = (e: React.FormEvent) => {
+  const handleHealthDataSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Health data recorded successfully!");
-    setHealthForm({
-      studentId: "", bloodGroup: "", heartRate: "", bloodPressure: "",
-      temperature: "", hemoglobin: "", visionLeft: "", visionRight: "",
-      weight: "", height: "", diabetes: false, asthma: false, allergies: false,
-      epilepsy: false, heartCondition: false, skinDisease: false,
-      dentalIssues: false, hearingIssues: false, otherConditions: "", remarks: "",
-    });
-  };
+    
+    try {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        toast.error("Not authenticated");
+        return;
+      }
 
-  const stats = [
-    { label: "Students Registered", value: "1,234", icon: Users, color: "text-health-teal" },
-    { label: "Checkups Today", value: "45", icon: ClipboardList, color: "text-health-blue" },
-    { label: "Pending Checkups", value: "89", icon: Calendar, color: "text-health-orange" },
-    { label: "Reports Generated", value: "23", icon: FileText, color: "text-health-green" },
-  ];
+      const response = await fetch(`${getApiBaseUrl()}/mo/health-records`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(healthForm)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Health data recorded successfully!");
+        setHealthForm({
+          studentId: "", bloodGroup: "", heartRate: "", bloodPressure: "",
+          temperature: "", hemoglobin: "", visionLeft: "", visionRight: "",
+          weight: "", height: "", diabetes: false, asthma: false, allergies: false,
+          epilepsy: false, heartCondition: false, skinDisease: false,
+          dentalIssues: false, hearingIssues: false, otherConditions: "", remarks: "",
+        });
+        fetchDashboardData(); // Refresh stats
+      } else {
+        toast.error(data.message || "Recording failed");
+      }
+    } catch (error) {
+      console.error("Health data error:", error);
+      toast.error("Failed to record health data");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">

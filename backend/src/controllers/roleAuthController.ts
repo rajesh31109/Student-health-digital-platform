@@ -101,7 +101,7 @@ export const loginMedicalOfficer = async (req: Request, res: Response) => {
 
     // Generate JWT token
     const token = generateToken(mo.id, 'medical_officer', {
-      phcId: mo.phc_id,
+      phcId: mo.phc_code,
     });
 
     res.status(200).json({
@@ -110,7 +110,7 @@ export const loginMedicalOfficer = async (req: Request, res: Response) => {
       data: {
         token,
         moId: mo.id,
-        name: mo.name,
+        name: `${mo.first_name} ${mo.last_name}`,
         email: mo.email,
       },
     });
@@ -174,7 +174,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
       data: {
         token,
         adminId: admin.id,
-        name: admin.name,
+        name: `${admin.first_name} ${admin.last_name}`,
         email: admin.email,
       },
     });

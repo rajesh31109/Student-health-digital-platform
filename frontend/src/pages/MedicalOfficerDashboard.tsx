@@ -36,6 +36,8 @@ const MedicalOfficerDashboard = () => {
     { label: "Pending Checkups", value: "0", icon: Calendar, color: "text-health-orange" },
     { label: "Reports Generated", value: "0", icon: FileText, color: "text-health-green" },
   ]);
+  const [recentRecords, setRecentRecords] = useState<Array<{id: string, name: string, school: string, class: string, roll_number: string}>>([]);
+  const [recordsLoading, setRecordsLoading] = useState(false);
   
   // Registration form state
   const [studentForm, setStudentForm] = useState({
@@ -108,18 +110,46 @@ const MedicalOfficerDashboard = () => {
         if (data.success && data.data) {
           const stats_data = data.data;
           setStats([
-            { label: "Students Registered", value: stats_data.totalStudents || "0", icon: Users, color: "text-health-teal" },
-            { label: "Checkups Today", value: stats_data.checkupsToday || "0", icon: ClipboardList, color: "text-health-blue" },
-            { label: "Pending Checkups", value: stats_data.pendingCheckups || "0", icon: Calendar, color: "text-health-orange" },
-            { label: "Reports Generated", value: stats_data.reportsGenerated || "0", icon: FileText, color: "text-health-green" },
+            { label: "Students Registered", value: stats_data.totalStudents?.toString() || "0", icon: Users, color: "text-health-teal" },
+            { label: "Checkups Today", value: stats_data.checkupsToday?.toString() || "0", icon: ClipboardList, color: "text-health-blue" },
+            { label: "Pending Checkups", value: stats_data.pendingCheckups?.toString() || "0", icon: Calendar, color: "text-health-orange" },
+            { label: "Reports Generated", value: stats_data.reportsGenerated?.toString() || "0", icon: FileText, color: "text-health-green" },
           ]);
+        }
+      } else {
+        console.error("Failed to fetch statistics");
+      }
+
+      // Fetch recent student records
+      setRecordsLoading(true);
+      const recordsResponse = await fetch(`${getApiBaseUrl()}/mo/students`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (recordsResponse.ok) {
+        const recordsData = await recordsResponse.json();
+        if (recordsData.success && Array.isArray(recordsData.data)) {
+          // Take the first 5 most recent records
+          const recent = recordsData.data.slice(0, 5).map((student: any) => ({
+            id: student.health_id,
+            name: student.name,
+            school: student.school_name,
+            class: student.class,
+            roll_number: student.roll_number
+          }));
+          setRecentRecords(recent);
         }
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
-      toast.error("Could not load statistics. Please try again.");
+      toast.error("Could not load data. Please try again.");
     } finally {
       setIsLoading(false);
+      setRecordsLoading(false);
     }
   };
 
@@ -615,26 +645,28 @@ const MedicalOfficerDashboard = () => {
                     </Button>
                   </div>
 
-                  {/* Sample Results */}
+                  {/* Recent Records from Backend */}
                   <div className="space-y-4">
                     <p className="text-sm text-muted-foreground">Recent Records:</p>
-                    {[
-                      { id: "KR12345678", name: "Ravi Kumar", school: "ZPHS Anantapur", class: "Class 8" },
-                      { id: "KR12345679", name: "Priya Sharma", school: "ZPHS Kadiri", class: "Class 6" },
-                      { id: "KR12345680", name: "Kiran Reddy", school: "MPPS Uravakonda", class: "Class 4" },
-                    ].map((student) => (
-                      <Card key={student.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-semibold text-foreground">{student.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {student.id} • {student.school} • {student.class}
-                            </p>
+                    {recordsLoading ? (
+                      <p className="text-sm text-muted-foreground">Loading records...</p>
+                    ) : recentRecords.length > 0 ? (
+                      recentRecords.map((student) => (
+                        <Card key={student.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-semibold text-foreground">{student.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {student.id} • {student.school} • {student.class}
+                              </p>
+                            </div>
+                            <Button variant="outline" size="sm">View Details</Button>
                           </div>
-                          <Button variant="outline" size="sm">View Details</Button>
-                        </div>
-                      </Card>
-                    ))}
+                        </Card>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No records found</p>
+                    )}
                   </div>
                 </div>
               </CardContent>

@@ -436,24 +436,44 @@ export const getMOStatistics = async (req: Request, res: Response) => {
     const { phc_code } = req.user;
 
     // Total students at PHC
-    const { data: allStudents, error: studentsError } = await supabase
+    const { data: allStudents } = await supabase
       .from('students')
       .select('id', { count: 'exact' })
       .eq('phc_code', phc_code)
       .eq('is_active', true);
 
-    // Total consultations this month
-    const { data: thisMonthRecords } = await supabase
+    // Checkups today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { data: todayRecords } = await supabase
       .from('health_records')
       .select('id', { count: 'exact' })
       .eq('medical_officer_id', req.user.userId)
-      .gte('consultation_date', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+      .gte('consultation_date', today.toISOString());
+
+    // Pending checkups (no report yet)
+    const { data: pendingCheckups } = await supabase
+      .from('health_records')
+      .select('id', { count: 'exact' })
+      .eq('medical_officer_id', req.user.userId)
+      .is('report_generated', false);
+
+    // Reports generated this month
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const { data: reportsGenerated } = await supabase
+      .from('health_records')
+      .select('id', { count: 'exact' })
+      .eq('medical_officer_id', req.user.userId)
+      .eq('report_generated', true)
+      .gte('created_at', monthStart.toISOString());
 
     res.status(200).json({
       success: true,
       data: {
-        total_students: allStudents?.length || 0,
-        consultations_this_month: thisMonthRecords?.length || 0,
+        totalStudents: allStudents?.length || 0,
+        checkupsToday: todayRecords?.length || 0,
+        pendingCheckups: pendingCheckups?.length || 0,
+        reportsGenerated: reportsGenerated?.length || 0,
       },
     });
   } catch (err: any) {

@@ -327,12 +327,12 @@ export const getDashboardStatistics = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       data: {
-        total_students: allStudents?.length || 0,
-        total_medical_officers: allMOs?.length || 0,
-        total_health_records: allRecords?.length || 0,
-        consultations_this_month: thisMonthRecords?.length || 0,
-        phc_statistics: phcStats,
-        consultation_types: consultationTypes,
+        totalStudents: allStudents?.length || 0,
+        totalMedicalOfficers: allMOs?.length || 0,
+        totalHealthRecords: allRecords?.length || 0,
+        consultationsThisMonth: thisMonthRecords?.length || 0,
+        phcStatistics: phcStats,
+        consultationTypes: consultationTypes,
       },
     });
   } catch (err: any) {

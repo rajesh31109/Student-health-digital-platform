@@ -49,6 +49,7 @@ const AdminDashboard = () => {
     { name: "School 1", students: 0, checkups: 0, completion: 0 },
     { name: "School 2", students: 0, checkups: 0, completion: 0 },
   ]);
+  const [consultationTypes, setConsultationTypes] = useState<Array<{type: string, count: number}>>([]);
 
   useEffect(() => {
     fetchAdminDashboard();
@@ -79,18 +80,19 @@ const AdminDashboard = () => {
         if (data.success && data.data) {
           const dashboard_data = data.data;
           setStats([
-            { label: "Total Students", value: dashboard_data.totalStudents || "0", icon: Users, color: "text-health-blue", change: "+0%" },
-            { label: "Schools Covered", value: dashboard_data.schoolsCovered || "0", icon: School, color: "text-health-teal", change: "+0" },
-            { label: "Checkups This Month", value: dashboard_data.checkupsThisMonth || "0", icon: Activity, color: "text-health-green", change: "+0%" },
-            { label: "Reports Generated", value: dashboard_data.reportsGenerated || "0", icon: FileText, color: "text-health-orange", change: "+0" },
+            { label: "Total Students", value: dashboard_data.totalStudents?.toString() || "0", icon: Users, color: "text-health-blue", change: "+0%" },
+            { label: "Medical Officers", value: dashboard_data.totalMedicalOfficers?.toString() || "0", icon: Users, color: "text-health-teal", change: "+0" },
+            { label: "Checkups This Month", value: dashboard_data.consultationsThisMonth?.toString() || "0", icon: Activity, color: "text-health-green", change: "+0%" },
+            { label: "Health Records", value: dashboard_data.totalHealthRecords?.toString() || "0", icon: FileText, color: "text-health-orange", change: "+0" },
           ]);
 
-          if (dashboard_data.healthAlerts) {
-            setHealthAlerts(dashboard_data.healthAlerts);
-          }
-
-          if (dashboard_data.topSchools) {
-            setTopSchools(dashboard_data.topSchools);
+          // Handle consultation types
+          if (dashboard_data.consultationTypes && typeof dashboard_data.consultationTypes === 'object') {
+            const typesArray = Object.entries(dashboard_data.consultationTypes).map(([type, count]: [string, any]) => ({
+              type,
+              count: count || 0
+            })).sort((a, b) => b.count - a.count);
+            setConsultationTypes(typesArray);
           }
         }
       }
@@ -262,21 +264,19 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {[
-                      { condition: "Anemia", cases: 234, percentage: 5.2 },
-                      { condition: "Vision Problems", cases: 189, percentage: 4.1 },
-                      { condition: "Dental Issues", cases: 156, percentage: 3.4 },
-                      { condition: "Underweight", cases: 134, percentage: 2.9 },
-                      { condition: "Skin Conditions", cases: 89, percentage: 1.9 },
-                    ].map((item, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                        <div>
-                          <p className="font-medium text-foreground">{item.condition}</p>
-                          <p className="text-sm text-muted-foreground">{item.cases} cases ({item.percentage}%)</p>
+                    {consultationTypes.length > 0 ? (
+                      consultationTypes.slice(0, 5).map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                          <div>
+                            <p className="font-medium text-foreground">{item.type}</p>
+                            <p className="text-sm text-muted-foreground">{item.count} cases</p>
+                          </div>
+                          <Badge variant="outline">{item.count}</Badge>
                         </div>
-                        <Badge variant="outline">{item.cases}</Badge>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No data available</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>

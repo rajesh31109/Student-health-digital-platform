@@ -18,8 +18,7 @@ INSERT INTO admins (
   last_name,
   designation,
   phone,
-  department,
-  is_active
+  department
 )
 VALUES (
   'rajeshpulluri333@gmail.com',
@@ -28,8 +27,7 @@ VALUES (
   'Pulluri',
   'DMHO',
   '9876543210',
-  'Health Department',
-  true
+  'Health Department'
 );
 ```
 
@@ -214,8 +212,8 @@ Everything is built, tested, and deployed.
 
 ### Create Admin
 ```sql
-INSERT INTO admins (email, password_hash, first_name, last_name, designation) 
-VALUES ('rajeshpulluri333@gmail.com', '$2a$10$nrKu62UzdywhQqEm/MzIveTbCqiE0M2pxKkbYjqpedO.fvZ2KywGO', 'Rajesh', 'Pulluri', 'DMHO');
+INSERT INTO admins (email, password_hash, first_name, last_name, designation, phone, department) 
+VALUES ('rajeshpulluri333@gmail.com', '$2a$10$nrKu62UzdywhQqEm/MzIveTbCqiE0M2pxKkbYjqpedO.fvZ2KywGO', 'Rajesh', 'Pulluri', 'DMHO', '9876543210', 'Health Department');
 ```
 
 ### Test Backend

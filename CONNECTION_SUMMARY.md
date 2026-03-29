@@ -10,7 +10,7 @@
 
 | Component | Status | URL | Notes |
 |-----------|--------|-----|-------|
-| **Frontend (Vercel)** | ✅ DEPLOYED | https://your-domain.vercel.app | Already deployed |
+| **Frontend (Vercel)** | ✅ DEPLOYED | https://studentdigitialhealthprofile.vercel.app | Already deployed |
 | **Backend (Render)** | 📦 READY | Pending | Ready to deploy |
 | **Database (Supabase)** | ✅ ACTIVE | Connected | All tables created |
 | **Local Dev Frontend** | ✅ RUNNING | http://localhost:8080 | Vite dev server |
@@ -259,7 +259,7 @@ VITE_API_URL=http://localhost:3001
 
 ### Step 3: Verify End-to-End
 ```
-1. Open https://your-vercel-domain.vercel.app
+1. Open https://studentdigitialhealthprofile.vercel.app
 2. Try login
 3. Check browser DevTools Network tab
 4. Verify API calls going to Render backend
@@ -402,14 +402,14 @@ User's Browser
      ↓ (HTTPS)
 ┌─────────────────────────────────────────────────────────────┐
 │  Vercel Frontend (React + Vite)                             │
-│  URL: https://your-domain.vercel.app                        │
+│  URL: https://studentdigitialhealthprofile.vercel.app      │
 │  ENV: VITE_API_URL=https://...onrender.com                 │
 └─────────────────────────────────────────────────────────────┘
      ↓ (API Calls)
 ┌─────────────────────────────────────────────────────────────┐
 │  Render Backend (Node.js + Express)                         │
 │  URL: https://student-health-backend.onrender.com/api       │
-│  ENV: FRONTEND_URL=https://your-domain.vercel.app          │
+│  ENV: FRONTEND_URL=https://studentdigitialhealthprofile.vercel.app │
 └─────────────────────────────────────────────────────────────┘
      ↓ (SQL Queries)
 ┌─────────────────────────────────────────────────────────────┐

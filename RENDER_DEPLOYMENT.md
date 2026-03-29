@@ -35,7 +35,7 @@ Add these in the Render Dashboard:
 ```
 PORT=3000
 NODE_ENV=production
-FRONTEND_URL=https://your-vercel-url.vercel.app
+FRONTEND_URL=https://studentdigitialhealthprofile.vercel.app
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_key
 JWT_SECRET=your-jwt-secret-key-change-this-to-something-secure

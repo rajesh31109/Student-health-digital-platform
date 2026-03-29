@@ -79,7 +79,7 @@ Add these in the "Environment" section:
 | `SUPABASE_ANON_KEY` | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` | From Supabase |
 | `SUPABASE_SERVICE_KEY` | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` | From Supabase (keep secret) |
 | `JWT_SECRET` | `frZxXzaMgUVorcvomQu7+SOKavDRMyFj6g8GsikTGmQ=` | JWT signing secret |
-| `FRONTEND_URL` | `https://your-vercel-domain.vercel.app` | Your Vercel frontend URL |
+| `FRONTEND_URL` | `https://studentdigitialhealthprofile.vercel.app` | Your Vercel frontend URL |
 | `ADMIN_EMAIL` | `rajeshpulluri333@gmail.com` | Admin user email |
 | `ADMIN_PASSWORD` | `admin123` | Admin user password |
 | `ADMIN_NAME` | `DMHO` | Admin user name |
@@ -124,7 +124,7 @@ Supabase Database
 - Render auto-assigns port
 - Backend listens on this port
 
-**`FRONTEND_URL=https://your-frontend.vercel.app`**
+**`FRONTEND_URL=https://studentdigitialhealthprofile.vercel.app`**
 - Used for CORS configuration
 - Allows frontend to make API calls
 - Must match Vercel domain exactly
@@ -212,7 +212,7 @@ Supabase Database
 **Startup**:
 ```
 🚀 Server running on http://0.0.0.0:3000
-📦 Frontend URL: https://your-vercel-domain.vercel.app
+📦 Frontend URL: https://studentdigitialhealthprofile.vercel.app
 ✅ Backend accessible at http://localhost:3000
 ```
 
@@ -325,7 +325,7 @@ SUPABASE_URL=https://hnbuxvarpgwoqntehoev.supabase.co
 SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYnV4dmFycGd3b3FudGVob2V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTkyNDcsImV4cCI6MjA5MDI5NTI0N30.HprpU4ACIx6ybJpjqce46roPXu1Sk4nEU10rlOH4Sbc
 SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuYnV4dmFycGd3b3FudGVob2V2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDcxOTI0NywiZXhwIjoyMDkwMjk1MjQ3fQ.OmLjEcXaYyy5X8vBO6H-IwRZkH9nFwvRmiKAvLmV4sY
 JWT_SECRET=frZxXzaMgUVorcvomQu7+SOKavDRMyFj6g8GsikTGmQ=
-FRONTEND_URL=https://your-vercel-domain.vercel.app
+FRONTEND_URL=https://studentdigitialhealthprofile.vercel.app
 ADMIN_EMAIL=rajeshpulluri333@gmail.com
 ADMIN_PASSWORD=admin123
 ADMIN_NAME=DMHO

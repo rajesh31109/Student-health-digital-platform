@@ -176,7 +176,7 @@ node dist/index.js
 ```
 NODE_ENV=production
 PORT=3000
-FRONTEND_URL=https://your-vercel-domain.vercel.app
+FRONTEND_URL=https://studentdigitialhealthprofile.vercel.app
 SUPABASE_URL=https://hnbuxvarpgwoqntehoev.supabase.co
 SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -364,7 +364,7 @@ Runtime: Node.js
 Once deployed:
 
 - **Backend**: https://student-health-backend.onrender.com
-- **Frontend**: https://your-vercel-domain.vercel.app
+- **Frontend**: https://studentdigitialhealthprofile.vercel.app
 - **API Health**: https://student-health-backend.onrender.com/api/health
 
 ---

@@ -150,8 +150,7 @@ Value: frZxXzaMgUVorcvomQu7+SOKavDRMyFj6g8GsikTGmQ=
 #### 7. Frontend URL (for CORS)
 ```
 Key:   FRONTEND_URL
-Value: https://your-vercel-domain.vercel.app
-Note: Replace with your actual Vercel domain
+Value: https://studentdigitialhealthprofile.vercel.app
 ```
 
 #### 8. Admin Email
@@ -229,7 +228,7 @@ Copy this and verify ALL are set:
 ☐ SUPABASE_ANON_KEY = eyJhbGc...
 ☐ SUPABASE_SERVICE_KEY = eyJhbGc...
 ☐ JWT_SECRET = frZxXz...
-☐ FRONTEND_URL = https://your-vercel-domain.vercel.app
+☐ FRONTEND_URL = https://studentdigitialhealthprofile.vercel.app
 ☐ ADMIN_EMAIL = rajeshpulluri333@gmail.com
 ☐ ADMIN_PASSWORD = admin123
 ☐ ADMIN_NAME = DMHO

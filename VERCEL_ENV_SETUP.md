@@ -103,7 +103,7 @@ After Backend Deployment on Render:
 
 3. **Check CORS**
    - Backend must have correct FRONTEND_URL set
-   - For Vercel: `FRONTEND_URL=https://yourdomain.vercel.app`
+   - For Vercel: `FRONTEND_URL=https://studentdigitialhealthprofile.vercel.app`
 
 4. **Test Backend Endpoint**
    - Visit: `https://student-health-backend.onrender.com/api/health`
@@ -133,7 +133,7 @@ Access via: **Deployments** tab in Vercel
 ### Issue 2: CORS Error
 **Solution**: Update backend `FRONTEND_URL` environment variable
 ```
-FRONTEND_URL=https://your-vercel-domain.vercel.app
+FRONTEND_URL=https://studentdigitialhealthprofile.vercel.app
 ```
 
 ### Issue 3: Build Fails
@@ -184,7 +184,7 @@ https://your-vercel-domain.vercel.app
 
 Example API call structure:
 ```
-https://your-vercel-domain.vercel.app  → Frontend
+https://studentdigitialhealthprofile.vercel.app  → Frontend
      ↓ makes API calls to ↓
 https://student-health-backend.onrender.com/api/auth/login
 ```

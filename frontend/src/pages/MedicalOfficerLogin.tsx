@@ -59,7 +59,7 @@ const MedicalOfficerLogin = () => {
         localStorage.setItem("role", "medical_officer");
 
         toast.success(`Welcome, ${data.data.name}!`);
-        navigate("/medical-officer-dashboard");
+        navigate("/dashboard/medical-officer");
       } else {
         toast.error(data.message || "Invalid credentials");
       }

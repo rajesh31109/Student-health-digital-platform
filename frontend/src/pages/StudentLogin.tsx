@@ -39,7 +39,7 @@ const StudentLogin = () => {
         localStorage.setItem("role", "student");
 
         toast.success(`Welcome, ${data.data.name}!`);
-        navigate("/student-dashboard");
+        navigate("/dashboard/student");
       } else {
         toast.error(data.message || "Invalid Health ID");
       }

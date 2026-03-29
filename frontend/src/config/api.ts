@@ -1,42 +1,63 @@
 /**
  * API Configuration
- * Dynamically determines the backend API URL based on the environment
  * Safe for build-time and runtime usage
+ * Handles all environment scenarios
  */
 
+/**
+ * Get API base URL with safety checks
+ * - Checks environment variable first (for build time)
+ * - Falls back to window.location checks (for runtime only)
+ * - Never crashes during build
+ */
 export const getApiBaseUrl = (): string => {
-  // Check if we have environment variable set (from .env or Vercel)
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl) {
-    return envUrl.includes('/api') ? envUrl : envUrl + '/api';
-  }
-
-  // Only use window.location if window is defined (runtime only)
-  if (typeof window !== 'undefined') {
-    // If in development with localhost
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:3001/api';
+  try {
+    // Priority 1: Environment variable (set at build or runtime)
+    const envUrl = import.meta.env.VITE_API_URL;
+    if (envUrl) {
+      const url = envUrl.trim();
+      if (url) {
+        return url.endsWith('/api') ? url : `${url}/api`;
+      }
     }
 
-    // If in GitHub Codespaces environment
-    if (window.location.hostname.includes('github.dev') || window.location.hostname.includes('preview.app.github.dev')) {
-      // Construct the backend URL using the same domain but port 3001
+    // Priority 2: Runtime detection (only if window exists)
+    if (typeof window !== 'undefined' && typeof window.location !== 'undefined') {
+      const hostname = window.location.hostname;
       const protocol = window.location.protocol;
-      const hostname = window.location.hostname.replace(/^\d+-/, '').replace(/^8080-/, '');
-      return `${protocol}//3001-${hostname}/api`;
-    }
-  }
 
-  // Fallback for build time and other cases
-  return 'http://localhost:3001/api';
+      // Local development
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:3001/api';
+      }
+
+      // Codespaces environment
+      if (hostname.includes('github.dev') || hostname.includes('preview.app.github.dev')) {
+        const cleanHostname = hostname.replace(/^\d+-/, '').replace(/^8080-/, '');
+        return `${protocol}//3001-${cleanHostname}/api`;
+      }
+    }
+
+    // Priority 3: Safe fallback
+    return 'http://localhost:3001/api';
+  } catch (error) {
+    // Even if something goes wrong, return a safe fallback
+    console.warn('Failed to determine API URL, using fallback');
+    return 'http://localhost:3001/api';
+  }
 };
 
-// Initialize at module load time
-let apiBaseUrl: string | null = null;
+/**
+ * Lazy-initialize API_BASE_URL to avoid build-time issues
+ */
+let cachedApiUrl: string | null = null;
 
-export const API_BASE_URL = (() => {
-  if (apiBaseUrl === null) {
-    apiBaseUrl = getApiBaseUrl();
+export const getAPIBaseURL = (): string => {
+  if (!cachedApiUrl) {
+    cachedApiUrl = getApiBaseUrl();
   }
-  return apiBaseUrl;
-})();
+  return cachedApiUrl;
+};
+
+// For backward compatibility
+export const API_BASE_URL = getAPIBaseURL();

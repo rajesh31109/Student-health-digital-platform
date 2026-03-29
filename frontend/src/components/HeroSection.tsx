@@ -2,8 +2,51 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Users, Activity } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-image.jpg";
+import { useState, useEffect } from "react";
+import { getApiBaseUrl } from "@/config/api";
+
+interface Statistics {
+  totalStudents: number;
+  totalSchools: number;
+  totalPHCs: number;
+  totalHealthRecords: number;
+}
 
 const HeroSection = () => {
+  const [stats, setStats] = useState<Statistics>({
+    totalStudents: 0,
+    totalSchools: 0,
+    totalPHCs: 0,
+    totalHealthRecords: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        const apiUrl = getApiBaseUrl();
+        const response = await fetch(`${apiUrl}/auth/homepage-statistics`);
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+          setStats(data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch statistics:', error);
+        // Use default fallback values if fetch fails
+        setStats({
+          totalStudents: 100000,
+          totalSchools: 500,
+          totalPHCs: 50,
+          totalHealthRecords: 0,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatistics();
+  }, []);
   return (
     <section className="relative min-h-screen gradient-hero pt-16 overflow-hidden">
       {/* Background Pattern */}
@@ -51,15 +94,21 @@ const HeroSection = () => {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-6 pt-8">
               <div className="text-center">
-                <div className="text-3xl font-display font-bold text-primary">1L+</div>
+                <div className="text-3xl font-display font-bold text-primary">
+                  {loading ? '...' : `${(stats.totalStudents / 100000).toFixed(1)}L+`}
+                </div>
                 <div className="text-sm text-muted-foreground">Students</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-display font-bold text-primary">500+</div>
+                <div className="text-3xl font-display font-bold text-primary">
+                  {loading ? '...' : `${stats.totalSchools}+`}
+                </div>
                 <div className="text-sm text-muted-foreground">Schools</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-display font-bold text-primary">50+</div>
+                <div className="text-3xl font-display font-bold text-primary">
+                  {loading ? '...' : `${stats.totalPHCs}+`}
+                </div>
                 <div className="text-sm text-muted-foreground">PHCs</div>
               </div>
             </div>

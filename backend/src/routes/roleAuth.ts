@@ -6,10 +6,17 @@ import {
   loginAdmin,
   getProfile,
   logout,
+  getHomepageStatistics,
 } from '../controllers/roleAuthController.js';
 import { authMiddleware } from '../middleware/auth.js';
 
 const router = Router();
+
+// =====================================================================
+// PUBLIC ROUTES (No authentication required)
+// =====================================================================
+// Get homepage statistics (for landing page)
+router.get('/homepage-statistics', getHomepageStatistics);
 
 // =====================================================================
 // STUDENT ROUTES

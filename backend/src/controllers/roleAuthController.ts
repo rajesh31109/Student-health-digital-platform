@@ -275,3 +275,54 @@ export const logout = async (req: Request, res: Response) => {
     });
   }
 };
+
+// =====================================================================
+// PUBLIC HOMEPAGE STATISTICS - No authentication required
+// =====================================================================
+
+export const getHomepageStatistics = async (req: Request, res: Response) => {
+  try {
+    // Count total active students
+    const { count: totalStudents } = await supabase
+      .from('students')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true);
+
+    // Count total active medical officers (PHCs)
+    const { count: totalPHCs } = await supabase
+      .from('medical_officers')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true);
+
+    // Count unique schools from students
+    const { data: schoolsData } = await supabase
+      .from('students')
+      .select('school_name')
+      .eq('is_active', true);
+
+    const uniqueSchools = new Set(
+      schoolsData?.map((s: any) => s.school_name).filter(Boolean) || []
+    ).size;
+
+    // Count total health records
+    const { count: totalHealthRecords } = await supabase
+      .from('health_records')
+      .select('*', { count: 'exact', head: true });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalStudents: totalStudents || 0,
+        totalSchools: uniqueSchools || 0,
+        totalPHCs: totalPHCs || 0,
+        totalHealthRecords: totalHealthRecords || 0,
+      },
+    });
+  } catch (err: any) {
+    console.error('Error fetching homepage statistics:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch statistics',
+    });
+  }
+};

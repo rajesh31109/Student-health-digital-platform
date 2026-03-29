@@ -1,3 +1,13 @@
+# 🎯 BACKEND ENVIRONMENT ISSUE - FIX NOW
+
+## ⚡ START HERE: [BACKEND_FIX_NOW.md](BACKEND_FIX_NOW.md)
+
+**The issue:** Backend on Render is not responding (all requests timeout)
+**The cause:** Missing SUPABASE_URL and SUPABASE_KEY environment variables
+**Time to fix:** ~10 minutes using the quick action plan
+
+---
+
 # 🔍 LOGIN DEBUG GUIDE - Find The Exact Issue
 
 ## The Login Flow
@@ -17,7 +27,20 @@
 
 ---
 
-## Why Login Might Fail
+## 🚨 CRITICAL: ROOT CAUSE IDENTIFIED
+
+### ❌ Scenario 4: Backend Not Responding ← **YOUR ISSUE**
+**Status**: Backend on Render is **completely unresponsive** (timeouts on ALL requests)
+
+**Why**: Missing environment variables on Render
+- `SUPABASE_URL` not set
+- `SUPABASE_KEY` not set
+
+**Solution**: Follow [BACKEND_FIX_NOW.md](BACKEND_FIX_NOW.md) - takes 10 minutes
+
+---
+
+## Other Possible Issues (Check After Backend is Fixed)
 
 ### ❌ Scenario 1: Admin Account Doesn't Exist
 Email `rajeshpulluri333@gmail.com` is NOT in the `admins` table
@@ -27,9 +50,6 @@ Admin exists but `password_hash` column is empty/NULL
 
 ### ❌ Scenario 3: Wrong Password
 Admin exists but password doesn't match the hash
-
-### ❌ Scenario 4: Backend Not Responding
-API call fails completely (CORS, timeout, etc)
 
 ---
 

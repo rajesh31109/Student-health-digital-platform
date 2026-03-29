@@ -95,7 +95,7 @@ cd backend && npm install && npm run build
 
 **Start Command:**
 ```
-node dist/index.js
+cd backend && node dist/index.js
 ```
 
 ---

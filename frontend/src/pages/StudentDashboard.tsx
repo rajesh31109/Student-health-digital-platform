@@ -112,31 +112,9 @@ const StudentDashboard = () => {
       setError(null);
     } catch (err) {
       console.error("Error fetching student data:", err);
-      setError("Failed to load health records. Using demo data.");
-      
-      // Fallback to demo data
-      setStudentData({
-        healthId: localStorage.getItem("healthId") || "TG-01-1968-0001",
-        name: localStorage.getItem("userName") || "Student User",
-        school: "ZPHS Anantapur",
-        class: "Class 10",
-        dob: "15 March 2010",
-        age: 14
-      });
-
-      setLatestVitals({
-        date: new Date().toISOString().split('T')[0],
-        bloodPressure: "110/70 mmHg",
-        heartRate: "78 bpm",
-        temperature: "98.4°F",
-        weight: "42 kg",
-        height: "152 cm",
-        bloodGroup: "B+",
-        hemoglobin: "13.2 g/dL",
-        visionLeft: "6/6",
-        visionRight: "6/6",
-        notes: "All vitals normal"
-      });
+      setError("Failed to load health records");
+      // No fallback demo data - show error to user
+      toast.error("Could not load health records. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
     }

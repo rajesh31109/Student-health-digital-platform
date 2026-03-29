@@ -182,12 +182,6 @@ const MedicalOfficerLogin = () => {
                         {isLoading ? "Logging in..." : "Login"}
                       </Button>
                     </form>
-
-                    <div className="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-200">
-                      <p className="text-xs text-blue-900">
-                        <strong>Demo:</strong> Email: <code className="bg-white px-2 py-1 rounded">doctor@example.com</code> | Password: <code className="bg-white px-2 py-1 rounded">doctor123</code>
-                      </p>
-                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>

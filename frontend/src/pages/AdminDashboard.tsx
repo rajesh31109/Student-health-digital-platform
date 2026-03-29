@@ -96,7 +96,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
-      toast.error("Could not load dashboard data. Using demo data.");
+      toast.error("Could not load dashboard statistics. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -117,7 +117,7 @@ const MedicalOfficerDashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
-      toast.error("Could not load dashboard data. Using demo data.");
+      toast.error("Could not load statistics. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -89,7 +89,7 @@ const StudentLogin = () => {
                       />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Your Health ID was provided during registration (e.g., TG-01-1968-0001)
+                      Enter your Health ID that was provided during registration
                     </p>
                   </div>
 
@@ -105,12 +105,6 @@ const StudentLogin = () => {
                     <li>• Data cannot be modified or deleted</li>
                     <li>• Contact your PHC for any corrections</li>
                   </ul>
-                </div>
-
-                <div className="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-200">
-                  <p className="text-xs text-blue-900">
-                    <strong>Demo:</strong> Use Health ID: <code className="bg-white px-2 py-1 rounded">TG-01-1968-0001</code>
-                  </p>
                 </div>
               </CardContent>
             </Card>

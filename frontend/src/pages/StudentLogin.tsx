@@ -23,11 +23,24 @@ const StudentLogin = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${getApiBaseUrl()}/auth/student-login`, {
+      const apiUrl = getApiBaseUrl();
+      console.log("Connecting to backend:", apiUrl);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const response = await fetch(`${apiUrl}/auth/student-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ healthId: healthId.toUpperCase() })
+        body: JSON.stringify({ healthId: healthId.toUpperCase() }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
       const data = await response.json();
 
@@ -43,9 +56,13 @@ const StudentLogin = () => {
       } else {
         toast.error(data.message || "Invalid Health ID");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
-      toast.error("Login failed. Please try again.");
+      if (error.name === "AbortError") {
+        toast.error("Request timeout - backend is not responding. Check /debug");
+      } else {
+        toast.error(`Login failed: ${error.message}. Check /debug for details.`);
+      }
     } finally {
       setIsLoading(false);
     }

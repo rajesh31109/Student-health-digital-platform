@@ -25,11 +25,24 @@ const AdminLogin = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${getApiBaseUrl()}/auth/admin-login`, {
+      const apiUrl = getApiBaseUrl();
+      console.log("Connecting to backend:", apiUrl);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const response = await fetch(`${apiUrl}/auth/admin-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
       const data = await response.json();
 
@@ -46,9 +59,13 @@ const AdminLogin = () => {
       } else {
         toast.error(data.message || "Invalid credentials");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
-      toast.error("Login failed. Please try again.");
+      if (error.name === "AbortError") {
+        toast.error("Request timeout - backend is not responding. Check /debug");
+      } else {
+        toast.error(`Login failed: ${error.message}. Check /debug for details.`);
+      }
     } finally {
       setIsLoading(false);
     }

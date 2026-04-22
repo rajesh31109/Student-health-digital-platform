@@ -45,17 +45,19 @@ app.use((req, res) => {
 const PORT = env.PORT;
 
 const startServer = async () => {
-  try {
-    await ensureAdminUser();
-  } catch (err: any) {
-    console.error('❌ Admin bootstrap failed:', err?.message || err);
-  }
-
+  // Start server listening immediately
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
     console.log(`📦 Frontend URL: ${env.FRONTEND_URL}`);
     console.log(`✅ Backend accessible at http://localhost:${PORT}`);
   });
+
+  // Run admin user creation in background (doesn't block server startup)
+  try {
+    await ensureAdminUser();
+  } catch (err: any) {
+    console.error('❌ Admin bootstrap failed:', err?.message || err);
+  }
 };
 
 startServer();

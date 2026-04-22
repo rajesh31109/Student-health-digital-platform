@@ -36,14 +36,17 @@ export const getApiBaseUrl = (): string => {
         const cleanHostname = hostname.replace(/^\d+-/, '').replace(/^8080-/, '');
         return `${protocol}//3001-${cleanHostname}/api`;
       }
+
+      // Default production backend URL when no VITE_API_URL is configured
+      return 'https://student-health-backend.onrender.com/api';
     }
 
     // Priority 3: Safe fallback
-    return 'http://localhost:3001/api';
+    return 'https://student-health-backend.onrender.com/api';
   } catch (error) {
     // Even if something goes wrong, return a safe fallback
-    console.warn('Failed to determine API URL, using fallback');
-    return 'http://localhost:3001/api';
+    console.warn('Failed to determine API URL, using fallback', error);
+    return 'https://student-health-backend.onrender.com/api';
   }
 };
 

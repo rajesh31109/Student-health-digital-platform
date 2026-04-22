@@ -7,6 +7,7 @@ import medicalOfficerRoutes from './routes/medicalOfficer.js';
 import adminRoutes from './routes/admin.js';
 import healthRecordsRoutes from './routes/healthRecords.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { ensureAdminUser } from './utils/initialSetup.js';
 
 const app = express();
 
@@ -43,10 +44,20 @@ app.use((req, res) => {
 
 const PORT = env.PORT;
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
-  console.log(`📦 Frontend URL: ${env.FRONTEND_URL}`);
-  console.log(`✅ Backend accessible at http://localhost:${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await ensureAdminUser();
+  } catch (err: any) {
+    console.error('❌ Admin bootstrap failed:', err?.message || err);
+  }
+
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+    console.log(`📦 Frontend URL: ${env.FRONTEND_URL}`);
+    console.log(`✅ Backend accessible at http://localhost:${PORT}`);
+  });
+};
+
+startServer();
 
 export default app;
